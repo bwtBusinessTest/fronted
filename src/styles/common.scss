@@ -1,0 +1,78 @@
+.query-container{
+	padding: 10px;
+	box-shadow: 0 0 4px #ccc;
+	position: relative;
+    overflow: hidden;
+    transition: height .5s;
+    .query-btn{
+        position: absolute;
+        right: 40px;
+        bottom: 18px;
+    }
+	.draggable{
+        position: absolute;
+        right: 0;
+        bottom: 18px;
+        width: 30px;
+        height: 30px;
+        padding-left: 5px;
+        line-height: 30px;
+        text-align: center;
+        border: 1px solid #ccc;
+        opacity: 0.5;
+        display: none;
+        border-radius: 50%;
+    }
+    &:hover{
+        .draggable{
+            display: block;
+        }
+    }
+}
+.manage-container{
+	margin-top: 20px;
+	padding: 10px;
+	box-shadow: 0 0 4px #ccc;
+	.el-dialog_wrapper{
+		left: 200px;
+		top: 50px;
+	}
+    .el-table{
+        
+    }
+}
+.el-button{
+	width: 88px;
+    padding: 9px 0px;
+}
+.el-table{
+	margin-top: 20px;
+}
+.page-container{
+	text-align: right;
+	padding-top: 10px;
+	.el-pagination{
+		padding-right: 0;
+	}
+}
+.reset-dialog-width{
+	.el-dialog{
+		width: 30%;
+            p{
+				text-align: center;
+			}
+	}
+}
+.el-dialog__body{
+	margin: 20px 0 5px 0;
+    border-top: 1px solid #ccc;
+    border-bottom: 1px solid #ccc;
+}
+.v-modal{
+    transition: all .1s;
+	left: 200px;
+	top: 50px;
+}
+.svg-icon{
+	margin-right: 5px;
+}

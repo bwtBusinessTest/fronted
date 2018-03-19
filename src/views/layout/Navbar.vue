@@ -2,9 +2,18 @@
   <el-menu class="navbar" mode="horizontal">
     <hamburger class="hamburger-container" :toggleClick="toggleSideBar" :isActive="sidebar.opened"></hamburger>
     <levelbar></levelbar>
+    <tabs-view></tabs-view>
+    <el-dropdown class="all-tabs">
+      <i class="el-icon-arrow-down el-icon--right"></i>
+      <el-dropdown-menu slot="dropdown">
+        <router-link v-for="(r, index) in allVisitedTabs" :to="r.path" :key="index">
+          <el-dropdown-item :class="{'tab-active': $route.path === r.path}" style="font-size:12px;">{{r.name}}</el-dropdown-item>
+        </router-link>
+      </el-dropdown-menu>
+    </el-dropdown>
     <el-dropdown class="avatar-container" trigger="click">
       <div class="avatar-wrapper">
-        <img class="user-avatar" :src="avatar+'?imageView2/1/w/80/h/80'">
+        <img class="user-avatar" src="../../assets/image/avator.gif">
         <i class="el-icon-caret-bottom"></i>
       </div>
       <el-dropdown-menu class="user-dropdown" slot="dropdown">
@@ -20,20 +29,25 @@
 </template>
 
 <script>
-import { mapGetters } from 'vuex'
+import { mapGetters, mapState } from 'vuex'
 import Levelbar from './Levelbar'
+import TabsView from './TabsView'
 import Hamburger from '@/components/Hamburger'
 
 export default {
   components: {
     Levelbar,
-    Hamburger
+    Hamburger,
+    TabsView
   },
   computed: {
     ...mapGetters([
       'sidebar',
       'avatar'
-    ])
+    ]),
+    ...mapState({
+      allVisitedTabs: state => state.app.visitedViews
+    })
   },
   methods: {
     toggleSideBar() {
@@ -91,6 +105,11 @@ export default {
                     font-size: 12px;
                 }
             }
+        }
+        .all-tabs{
+          position: absolute;
+          right: 90px;
+          vertical-align: top;
         }
     }
 </style>

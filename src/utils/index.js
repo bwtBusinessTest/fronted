@@ -1,7 +1,3 @@
-/**
- * Created by jiachenpan on 16/11/18.
- */
-
  export function parseTime(time, cFormat) {
    if (arguments.length === 0) {
      return null
@@ -55,4 +51,39 @@
    } else {
      return d.getMonth() + 1 + '月' + d.getDate() + '日' + d.getHours() + '时' + d.getMinutes() + '分'
    }
+ }
+
+ export function formatDate(date) {
+  var dateObj = new Date(date);
+  var y = dateObj.getFullYear();
+  var m = dateObj.getMonth() + 1;
+  var d = dateObj.getDate();
+  m = m < 10 ? '0' + m : m;
+  var d = d < 10 ? ('0' + d) : d;
+  return y + '-' + m + '-' + d;
+ }
+
+ export function formatLongDate(date) {
+  var dateObj = new Date(date);
+  var y = dateObj.getFullYear();
+  var m = dateObj.getMonth() + 1;
+  var d = dateObj.getDate();
+  m = m < 10 ? '0' + m : m;
+  var d = d < 10 ? ('0' + d) : d;
+  var h = dateObj.getHours() < 10 ? '0' + dateObj.getHours() : dateObj.getHours();
+  var mm = dateObj.getMinutes() < 10 ? '0' + dateObj.getMinutes() : dateObj.getMinutes();
+  return y + '-' + m + '-' + d + ' ' + h + ':' + mm;
+ }
+
+ export function formatLongDateToSecond(date) {
+  var dateObj = new Date(date);
+  var y = dateObj.getFullYear();
+  var m = dateObj.getMonth() + 1;
+  var d = dateObj.getDate();
+  m = m < 10 ? '0' + m : m;
+  var d = d < 10 ? ('0' + d) : d;
+  var h = dateObj.getHours() < 10 ? '0' + dateObj.getHours() : dateObj.getHours();
+  var mm = dateObj.getMinutes() < 10 ? '0' + dateObj.getMinutes() : dateObj.getMinutes();
+  var ss = dateObj.getSeconds() < 10 ? '0' + dateObj.getSeconds() : dateObj.getSeconds();
+  return y + '-' + m + '-' + d + ' ' + h + ':' + mm + ':' + ss;
  }

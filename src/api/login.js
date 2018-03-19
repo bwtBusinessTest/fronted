@@ -2,10 +2,10 @@ import fetch from '@/utils/fetch'
 
 export function login(username, password) {
   return fetch({
-    url: '/user/login',
+    url: 'login',
     method: 'post',
     data: {
-      username,
+      userName: username,
       password
     }
   })
@@ -19,9 +19,24 @@ export function getInfo(token) {
   })
 }
 
+export function modifyPassword({ params }) {
+  return fetch({
+    url: '/user/setNewPwd',
+    method: 'post',
+    data: params
+  });
+}
+
+export function getAuthorization() {
+  return fetch({
+    url: '/user/getUserAuth',
+    method: 'post'
+  });
+}
+
 export function logout() {
   return fetch({
-    url: '/user/logout',
-    method: 'post'
+    url: '/logout',
+    method: 'get'
   })
 }

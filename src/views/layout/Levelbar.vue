@@ -1,8 +1,10 @@
 <template>
   <el-breadcrumb class="app-levelbar" separator="/">
     <el-breadcrumb-item v-for="(item,index)  in levelList" :key="item.path">
-      <router-link v-if='item.redirect==="noredirect"||index==levelList.length-1' to="" class="no-redirect">{{item.name}}</router-link>
-      <router-link v-else :to="item.redirect||item.path">{{item.name}}</router-link>
+      <!-- <router-link v-if='item.redirect==="noredirect"||index==levelList.length-1 || noClickLevelbar' to="" class="no-redirect">{{item.name}}</router-link>
+      <router-link v-else :to="item.redirect||item.path">{{item.name}}</router-link> -->
+      <span v-if="item.name === '订单明细'">团购订单／</span>
+      <span>{{item.name}}</span>
     </el-breadcrumb-item>
   </el-breadcrumb>
 </template>
@@ -27,6 +29,13 @@ export default {
       this.levelList = matched
     }
   },
+  computed: {
+    noClickLevelbar() {
+      return this.levelList.some(e => {
+        return e.name === '订单明细';
+      });
+    }
+  },
   watch: {
     $route() {
       this.getBreadcrumb()
@@ -44,6 +53,14 @@ export default {
   .no-redirect {
     color: #97a8be;
     cursor: text;
+  }
+  .el-breadcrumb__item{
+    .el-breadcrumb__item__inner{
+      span{
+        color: #97a8be;
+        cursor: text;
+      }
+    }
   }
 }
 </style>

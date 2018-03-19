@@ -2,7 +2,7 @@
   <div class="login-container">
     <el-form autoComplete="on" :model="loginForm" :rules="loginRules" ref="loginForm" label-position="left" label-width="0px"
       class="card-box login-form">
-      <h3 class="title">vue-element-admin</h3>
+      <h3 class="title">八维通商业平台后台管理系统</h3>
       <el-form-item prop="username">
         <span class="svg-container svg-container_login">
           <icon-svg icon-class="yonghuming" />
@@ -18,41 +18,38 @@
       </el-form-item>
       <el-form-item>
         <el-button type="primary" style="width:100%;" :loading="loading" @click.native.prevent="handleLogin">
-          Sign in
+          登录
         </el-button>
       </el-form-item>
-      <div class='tips'>
-        <span style="margin-right:20px;">username: admin</span>
-        </span> password: admin</span>
-      </div>
     </el-form>
   </div>
 </template>
 
 <script>
 import { isvalidUsername } from '@/utils/validate'
+import { test } from '@/api/test'
 
 export default {
   name: 'login',
   data() {
     const validateUsername = (rule, value, callback) => {
-      if (!isvalidUsername(value)) {
-        callback(new Error('请输入正确的用户名'))
+      if (value.length === 0) {
+        callback('请输入用户名');
       } else {
-        callback()
+        callback();
       }
     }
     const validatePass = (rule, value, callback) => {
-      if (value.length < 5) {
-        callback(new Error('密码不能小于5位'))
+      if (value.length === 0) {
+        callback(new Error('请输入密码'))
       } else {
         callback()
       }
     }
     return {
       loginForm: {
-        username: 'admin',
-        password: 'admin'
+        username: '',
+        password: ''
       },
       loginRules: {
         username: [{ required: true, trigger: 'blur', validator: validateUsername }],
@@ -70,6 +67,7 @@ export default {
             this.loading = false
             this.$router.push({ path: '/' })
           }).catch(() => {
+            // this.$message.error('密码错误');
             this.loading = false
           })
         } else {
@@ -137,7 +135,7 @@ export default {
       position: absolute;
       left: 0;
       right: 0;
-      width: 400px;
+      width: 430px;
       padding: 35px 35px 15px 35px;
       margin: 120px auto;
     }

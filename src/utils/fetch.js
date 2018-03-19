@@ -1,18 +1,21 @@
 import axios from 'axios'
 import { Message, MessageBox } from 'element-ui'
 import store from '../store'
+import router from '../router'
 import { getToken } from '@/utils/auth'
+import loginModal from '../components/loginModal/modal'
 
-// 创建axios实例
+console.log(process.env.BASE_API)
+// axios.defaults.headers.post['Content-Type'] = 'application/json';
 const service = axios.create({
-  baseURL: process.env.BASE_API, // api的base_url
-  timeout: 15000                  // 请求超时时间
+  baseURL: process.env.BASE_API,
+  timeout: 15000
+
 })
 
-// request拦截器
 service.interceptors.request.use(config => {
   if (store.getters.token) {
-    config.headers['X-Token'] = getToken() // 让每个请求携带自定义token 请根据实际情况自行修改
+    config.headers['Authorization'] = getToken()
   }
   return config
 }, error => {
@@ -21,23 +24,22 @@ service.interceptors.request.use(config => {
   Promise.reject(error)
 })
 
-// respone拦截器
 service.interceptors.response.use(
   response => {
   /**
-  * code为非20000是抛错 可结合自己业务进行修改
+  * code为非0000是抛错
   */
     const res = response.data
-    if (res.code !== 20000) {
+    if (res.errcode !== '0000') {
       Message({
-        message: res.data,
+        message: res.errmsg,
         type: 'error',
-        duration: 5 * 1000
+        duration: 3 * 1000,
+        showClose: true
       })
 
-      // 50008:非法的token; 50012:其他客户端登录了;  50014:Token 过期了;
-      if (res.code === 50008 || res.code === 50012 || res.code === 50014) {
-        MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
+      if (res.errcode === '0005' && store.getters.token) {
+        /*MessageBox.confirm('你已被登出，可以取消继续留在该页面，或者重新登录', '确定登出', {
           confirmButtonText: '重新登录',
           cancelButtonText: '取消',
           type: 'warning'
@@ -45,7 +47,14 @@ service.interceptors.response.use(
           store.dispatch('FedLogOut').then(() => {
             location.reload()// 为了重新实例化vue-router对象 避免bug
           })
-        })
+        })*/
+        /*store.dispatch('FedLogOut').then(() => {
+          location.reload()
+        })*/
+        
+        if (!document.getElementById('loginModal')) {
+            loginModal();
+        }
       }
       return Promise.reject('error')
     } else {

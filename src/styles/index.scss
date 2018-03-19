@@ -1,5 +1,6 @@
 @import './element-ui.scss';
 @import './mixin.scss';
+@import './sidebar.scss';
 body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
@@ -67,5 +68,9 @@ a:hover {
   vertical-align: -0.15em;
   fill: currentColor;
   overflow: hidden;
+}
+
+.tab-active{
+  color: #20a0ff;
 }
 
