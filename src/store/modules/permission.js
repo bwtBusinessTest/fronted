@@ -26,7 +26,7 @@ function secondLayHiddenRouter(name) {
 }
 
 function thirdLayHiddenRouter(name) {
-	return ['订单明细','添加广告', '修改广告', '申请审核', '广告投放设置'].some(el => {
+	return ['订单明细','添加广告', '修改广告', '申请审核', '广告投放设置', '广告详情'].some(el => {
 		return el === name;
 	});
 }

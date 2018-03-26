@@ -25,7 +25,7 @@
                 </div>
             </div>
             <div>
-                <el-table :data="materialChoosetableData" border height="400" :row-class-name="handleRowClassName" @cell-click="handleTableImgClick">
+                <el-table :data="materialChoosetableData" border height="500" :row-class-name="handleRowClassName" @cell-click="handleTableImgClick">
                 <el-table-column label="操作" align="center">
                     <template slot-scope="scope">
                         <el-button
@@ -54,7 +54,7 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, prev, pager, next" :total="totalRows" :page-size="pageSize" @current-change="handleCurrentChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next" :total="totalRows" :page-size="pageSize" :page-sizes="[20,50,100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
             </div>
             </div>
         </el-dialog>
@@ -79,7 +79,7 @@ export default {
             materialChoosetableData: [],
             totalRows: 0,
             currentPage: 1,
-            pageSize: 5,
+            pageSize: 20,
             showImgUrl: '',
             testUrl: 'http://cangdu.org:8001/img/16018a5c08533.jpeg'
         }
@@ -147,7 +147,11 @@ export default {
         handleCurrentChange(val) {
             this.currentPage = val;
             this.getAdMaterialList(this.currentPage);
-        }
+        },
+        handleSizeChange(val) {
+            this.pageSize = val;
+            this.getAdMaterialList(this.currentPage);
+        },
     },
     watch: {
         show() {

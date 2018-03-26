@@ -31,21 +31,25 @@
       </el-row>
       <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable"
                 v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData">
+                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
         <el-table-column type="selection">
+        </el-table-column>
+        <el-table-column label="作业ID" align="center" prop="jobId" width="120">
         </el-table-column>
         <el-table-column label="作业名称" align="center" prop="jobName" width="200">
         </el-table-column>
-        <el-table-column label="作业描述" align="center" prop="jobDesc" width="280">
+        <el-table-column label="作业描述" align="center" prop="jobDesc" width="330">
         </el-table-column>
         <el-table-column label="服务类型" align="center" prop="serviceTypeDesc" width="100">
         </el-table-column>
         <el-table-column label="触发器表达式" align="center" prop="cronExpr" width="120">
         </el-table-column>
+        <el-table-column label="作业参数" align="center" prop="jobDataStr" width="300">
+        </el-table-column>
       </el-table>
       <div class="page-container">
         <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalJob" :page-size="pageSize"
-                       :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange"
+                       :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"></el-pagination>
       </div>
     </div>
@@ -64,14 +68,25 @@
           </el-select>
         </el-form-item>
         <el-form-item label="服务:" prop="serviceId">
-          <el-select size="small" v-model="addJobInfo.serviceId" filterable clearable >
-            <el-option v-for="item in taskList" :key="item.id" :label="item.taskName" :value="item.id">
-            </el-option>
-          </el-select>
+        <el-select size="small" v-model="addJobInfo.serviceId" filterable clearable @change="changeCurrentServiceId">
+          <el-option v-for="item in taskList" :key="item.id" :label="item.taskName" :value="item.id">
+          </el-option>
+        </el-select>
         </el-form-item>
-        <el-form-item label="Cron表达式:" prop="cronExpr">
+        <el-form-item label="服务描述:" >
+          <el-input type="textarea" :rows="3" v-model="addJobInfo.serviceDesc" disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="执行参数:">
+          <el-input v-model="addJobInfo.serviceParam" disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="参数说明:" >
+          <el-input type="textarea" :rows="3" v-model="addJobInfo.serviceParamDesc" disabled="true"></el-input>
+        </el-form-item>
+        <el-form-item label="Cron表达式:" prop="cronExpr" >
           <el-input v-model="addJobInfo.cronExpr"></el-input>
-          <a href="_blank:http://cron.qqe2.com/"/>
+        </el-form-item>
+        <el-form-item label="作业参数:" prop="jobParam">
+          <el-input v-model="addJobInfo.jobParam" ></el-input>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -109,6 +124,9 @@
       data() {
           var validateJobName = (rule, value, callback) => {
               if (value) {
+                  if (value.indexOf('-') > 0) {
+                      callback('-字符为系统占用，作业名称不能包含-字符');
+                  }
                   getJobByName({ params: value.trim() }).then(res => {
                       if (res.result.isExist) {
                           callback('作业名称已存在');
@@ -130,7 +148,7 @@
               loading: false,
               noTableData: '',
               totalJob: 0,
-              pageSize: 10,
+              pageSize: 20,
               currentPage: 1,
               multipleSelection: [],
               dialogAddVisible: false,
@@ -140,14 +158,19 @@
                   jobDesc: '',
                   serviceType: '',
                   serviceId: '',
-                  cronExpr: ''
+                  serviceDesc: '',
+                  serviceParam: '',
+                  serviceParamDesc: '',
+                  cronExpr: '',
+                  jobParam: ''
               },
               addJobRules: {
                   jobName: [{ validator: validateJobName, trigger: 'blur' }, { required: true, message: '请输入作业名称', trigger: 'blur' }, { max: 50, message: '最长50个字符', trigger: 'blur' }],
                   jobDesc: [{ max: 100, message: '最长100个字符', trigger: 'blur' }],
                   serviceType: [{ required: true, message: '请选择服务类型', trigger: 'blur' }],
                   serviceId: [{ required: true, message: '请选择服务', trigger: 'blur' }],
-                  cronExpr: [{ required: true, max: 20, message: '最长20个字符', trigger: 'blur' }]
+                  cronExpr: [{ required: true, max: 20, message: '最长20个字符', trigger: 'blur' }],
+                  jobParam: [{ max: 500, message: '最长500个字符', trigger: 'blur' }]
               },
               queryContainerShrink: false
           };
@@ -170,10 +193,30 @@
                   getTaskListByType({ params }).then(res => {
                       if (res.errcode === '0000') {
                           this.taskList = res.result;
+                          this.addJobInfo.serviceId = '';
+                          this.addJobInfo.serviceDesc = '';
+                          this.addJobInfo.serviceParam = '';
+                          this.addJobInfo.serviceParamDesc = '';
                       }
                   });
               } else {
                   this.taskList = [];
+              }
+          },
+          changeCurrentServiceId() {
+              if (this.addJobInfo.serviceId !== '') {
+                  var task = this.taskList.find((value, index, arr) => {
+                      return value.id === this.addJobInfo.serviceId;
+                  });
+                  if (task !== undefined) {
+                      this.addJobInfo.serviceDesc = task.taskDesc;
+                      this.addJobInfo.serviceParam = task.taskParam;
+                      this.addJobInfo.serviceParamDesc = task.taskParamDesc;
+                  }
+              } else {
+                  this.addJobInfo.serviceDesc = '';
+                  this.addJobInfo.serviceParam = '';
+                  this.addJobInfo.serviceParamDesc = '';
               }
           },
           getJobList(page) {
@@ -227,6 +270,7 @@
                           jobDesc: this.addJobInfo.jobDesc || null,
                           serviceType: this.addJobInfo.serviceType || null,
                           serviceId: this.addJobInfo.serviceId || null,
+                          jobParam: this.addJobInfo.jobParam || null,
                           cronExpr: this.addJobInfo.cronExpr
                       };
                       addJob({ params }).then(res => {

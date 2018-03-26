@@ -109,7 +109,8 @@
 			    	'dialogJsTestVisible'
 			    ],
 			    loading: true,
-			    noTableData: ' '
+			    noTableData: ' ',
+			    pageSize: 20,
 			}
 		},
 		created() {
@@ -173,7 +174,7 @@
 
 			getRuleList(pageNo, isFirst) {
 				const currentPage = pageNo || 1;
-				const params = { pageNo: currentPage, ruleName: this.form.ruleName || null, enableStatus: this.form.enableStatus || null}
+				const params = { pageNo: currentPage, pageSize: this.pageSize, ruleName: this.form.ruleName || null, enableStatus: this.form.enableStatus || null}
 				ruleListApi({ params }).then(res => {
 					this.totalRules = res.result.totalCount;
 					this.tableData = res.result.rows.filter((item) => {
@@ -226,7 +227,10 @@
 				this.currentPage = val;
 				this.getRuleList(val);
 			},
-
+			handleSizeChange(val) {
+				this.pageSize = val;
+				this.getRuleList(this.currentPage);
+			},
 			clearNewAdd() {
 				for(let key in this.newAddRuleInfoData) {
 					if (key === 'sysFunctionInParamDtos') {

@@ -101,7 +101,7 @@ export function IRDownloadUrl({ params }) {
 }
 
 export function downloadTemplateUrl() {
-	return process.env.BASE_API + `/card/groupOrder/template/download?Authorization=` + getToken();
+	return process.env.BASE_API + `card/groupOrder/template/download?Authorization=` + getToken();
 }
 
 export function cancelImport({ params }) {

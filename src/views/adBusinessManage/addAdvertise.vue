@@ -86,13 +86,13 @@
                 </el-table-column>
                 <el-table-column label="广告位ID" prop="id" width="110" align="center">
                 </el-table-column>
-                <el-table-column label="城市" prop="cityName" width="160" :show-overflow-tooltip="true">
+                <el-table-column label="城市" prop="cityName" width="100" :show-overflow-tooltip="true" align="center">
                 </el-table-column>
                 <el-table-column label="广告位名称" prop="adSenseName" width="130" align="center">
                 </el-table-column>
                 <el-table-column label="广告类型" prop="adType" width="130" align="center">
                 </el-table-column>
-                <el-table-column label="广告位尺寸" prop="adPositionSize" width="170">
+                <el-table-column label="广告位尺寸" prop="adPositionSize" width="110">
                 </el-table-column>
                 <el-table-column label="权重值" prop="importantVal" width="100">
                     <template slot-scope="scope">
@@ -107,7 +107,7 @@
                         <restrictInput v-show="scope.row.orderValEdit" v-model="scope.row.orderVal" :max="10" :min="1" width="79px" v-focus="scope.row.orderValEdit" @handleBlur="handleBlur(scope.row)"></restrictInput>
                     </template>
                 </el-table-column>
-                <el-table-column label="适配度" prop="match" width="170">
+                <el-table-column label="适配度" prop="match" width="110" align="center">
                 </el-table-column>
                 <el-table-column label="投放／阈值／轮播" prop="put" width="160">
                 </el-table-column>
@@ -291,41 +291,78 @@ export default {
             if (this.titleData.adBelong === '本级') {
                 if (gloableUserSelectCity) {
                     arr.forEach(i => {
-                        i.put = `${i.totalAdsCount}/${i.threshold}`;
-                        i.edit = false;
-                        i.importantVal = 1;
-                        i.orderVal = 1;
-                        i.orderValEdit = false;
-                        i.cityId = i.cityId;
-                        i.cityName = i.city;
-                        this.tableData.push(Object.assign({}, i));
+                        if (this.tableData.some(row => {
+                            return row.id === i.id && row.cityId === i.cityId;
+                        })) {
+                            this.$notify({
+                                title: '提示',
+                                message: '相同广告位相同城市不能重复添加',
+                                type: 'warning',
+                                duration: 1000
+                            });
+                        } else {
+                            i.put = `${i.cityIds[0].count + i.cityIds[1].count}/${i.threshold}`;
+                            i.edit = false;
+                            i.importantVal = 1;
+                            i.orderVal = 1;
+                            i.orderValEdit = false;
+                            i.cityId = i.cityId;
+                            i.cityName = i.city;
+                            this.tableData.push(Object.assign({}, i));
+                        }
                     });
                 } else {
                     arr.forEach(i => {
-                        i.cityIds.forEach(j => {
+                        i.cityIds.forEach((j, index) => {
                             if (j.checked) {
                                 i.cityId = j.cityId;
                                 i.cityName = j.cityName;
-                                i.put = `${i.totalAdsCount}/${i.threshold}`;
+                                if (index !== 0) {
+                                    i.put = `${(j.count + i.cityIds[0].count)}/${i.threshold}`;
+                                } else {
+                                    i.put = `${j.count}/${i.threshold}`;
+                                }
                                 i.edit = false;
                                 i.importantVal = 1;
                                 i.orderVal = 1;
                                 i.orderValEdit = false;
-                                this.tableData.push(Object.assign({}, i));
+                                if (this.tableData.some(row => {
+                                    return row.id === i.id && row.cityId === i.cityId;
+                                })) {
+                                    this.$notify({
+                                        title: '提示',
+                                        message: '相同广告位相同城市不能重复添加',
+                                        type: 'warning',
+                                        duration: 1000
+                                    });
+                                } else {
+                                    this.tableData.push(Object.assign({}, i));
+                                }
                             }
                         });
                     });
                 }
             } else {
                 arr.forEach(i => {
-                    i.put = `${i.totalAdsCount}/${i.threshold}`;
-                    i.edit = false;
-                    i.importantVal = 1;
-                    i.orderVal = 1;
-                    i.orderValEdit = false;
-                    i.cityId = this.titleData.cityId;
-                    i.cityName = i.city;
-                    this.tableData.push(Object.assign({}, i));
+                    if (this.tableData.some(row => {
+                        return row.id === i.id && row.cityId === i.cityId;
+                    })) {
+                        this.$notify({
+                            title: '提示',
+                            message: '相同广告位相同城市不能重复添加',
+                            type: 'warning',
+                            duration: 1000
+                        });
+                    } else {
+                        i.put = `${i.cityIds[0].count + i.cityIds[1].count}/${i.threshold}`;
+                        i.edit = false;
+                        i.importantVal = 1;
+                        i.orderVal = 1;
+                        i.orderValEdit = false;
+                        i.cityId = this.titleData.cityId;
+                        i.cityName = i.city;
+                        this.tableData.push(Object.assign({}, i));
+                    }
                 });
             }
         },

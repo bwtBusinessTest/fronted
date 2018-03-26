@@ -4,7 +4,7 @@
             <el-form :inline="true" :model="form" label-width="100px" style="width:1072px;margin:auto;">
                 <el-form-item label="任务类型:">
                     <el-select size="small" v-model="form.taskType" filterable clearable>
-                        <el-option v-for="item in taskTypes" :key="item.id" :label="item.caption" :value="item.id">
+                        <el-option v-for="item in taskTypes" :key="item.id" :label="item.caption" :value="item.value">
                     </el-option>
                     </el-select>
                 </el-form-item>
@@ -18,7 +18,7 @@
                     <el-input size="small" v-model="form.taskId" style="width: 194px;"></el-input>
                 </el-form-item>
                 <el-form-item label="任务执行结果:">
-                    <el-select size="small" v-model="form.taskResult">
+                    <el-select size="small" v-model="form.taskResult" filterable clearable>
                         <el-option v-for="item in taskResults" :label="item.caption" :value="item.value" :key="item.value"></el-option>
                     </el-select>
                 </el-form-item>
@@ -35,7 +35,7 @@
             <el-row type="flex" justify="start">
                 <el-col :span="2" v-if="btnShow"><el-button size="small" type="primary" @click="againExecute">重新执行</el-button></el-col>
             </el-row>
-            <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData">
+            <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
                 <el-table-column type="selection">
                 </el-table-column>
                 <el-table-column label="任务日志ID" prop="id" width="120">
@@ -62,7 +62,7 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalTasks" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalTasks" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
             </div>
         </div>
         <el-dialog title="重新执行" @open="openNewAddModal" :visible.sync="dialogAgainExecuteVisible" :close-on-click-modal="false">
@@ -117,7 +117,7 @@ export default {
             loading: false,
             noTableData: '',
             totalTasks: 0,
-            pageSize: 10,
+            pageSize: 20,
             currentPage: 1,
             multipleSelection: [],
             dialogAgainExecuteVisible: false,
@@ -168,7 +168,7 @@ export default {
                 ed = '';
             }
 
-            const params = { pageNo: pageNo, pageSize: this.pageSize, taskId: this.form.taskId, taskType: this.form.taskType, taskName: this.form.taskName, execStartTime: sd, execEndTime: ed, status: this.taskResult };
+            const params = { pageNo: pageNo, pageSize: this.pageSize, taskId: this.form.taskId, taskType: this.form.taskType, taskName: this.form.taskName, execStartTime: sd, execEndTime: ed, status: this.form.taskResult };
             getTaskLogLists({ params }).then(res => {
                 if (res.errcode === '0000') {
                     this.tableData = res.result.rows;

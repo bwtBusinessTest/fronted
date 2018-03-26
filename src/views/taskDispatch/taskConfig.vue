@@ -37,7 +37,7 @@
       </el-row>
       <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable"
                 v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData">
+                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
         <el-table-column type="selection">
         </el-table-column>
         <el-table-column label="服务ID" align="center" prop="id" width="120">
@@ -61,7 +61,7 @@
       </el-table>
       <div class="page-container">
         <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalTask" :page-size="pageSize"
-                       :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange"
+                       :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"></el-pagination>
       </div>
     </div>
@@ -184,7 +184,7 @@
               loading: false,
               noTableData: '',
               totalTask: 0,
-              pageSize: 10,
+              pageSize: 20,
               currentPage: 1,
               multipleSelection: [],
               dialogAddVisible: false,

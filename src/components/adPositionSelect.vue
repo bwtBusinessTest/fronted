@@ -31,7 +31,7 @@
                 </div>
             </div>
             <div v-if="city === '0'">
-                <el-table :data="adPositiontableData" :cell-style="noBorderRight" border :key="1">
+                <el-table :data="adPositiontableData" :cell-style="noBorderRight" border :key="1" :height="500">
                     <el-table-column type="expand" width="30">
                         <template slot-scope="props">
                             <div class="row-citys">
@@ -60,12 +60,12 @@
                     </el-table-column>
                 </el-table>
                 <div class="page-container">
-                    <el-pagination layout="total, prev, pager, next" :total="totalRows" :page-size="pageSize" @current-change="handleCurrentChange"></el-pagination>
+                    <el-pagination layout="total, sizes, prev, pager, next" :total="totalRows" :page-size="pageSize" :page-sizes="[20,50,100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
                 </div>
             </div>
             <div v-else>
-                <el-table :data="adPositiontableData2" @selection-change="handleSelectionChange" border height="300" :key="2" :cell-style="markMatch">
-                    <el-table-column type="selection">
+                <el-table :data="adPositiontableData2" @selection-change="handleSelectionChange" border height="500" :key="2" :cell-style="markMatch" ref="multipleTable2" :row-key="getRowKeys">
+                    <el-table-column type="selection" :reserve-selection="true">
                     </el-table-column>
                     <el-table-column label="广告位ID" prop="id"  align="center">
                     </el-table-column>
@@ -83,7 +83,7 @@
                     </el-table-column>
                 </el-table>
                 <div class="page-container">
-                    <el-pagination layout="total, prev, pager, next" :total="totalRows2" :page-size="pageSize" @current-change="handleCurrentChange2"></el-pagination>
+                    <el-pagination layout="total, sizes, prev, pager, next" :total="totalRows2" :page-size="pageSize" :page-sizes="[10,20,100]" @current-change="handleCurrentChange2" @size-change="handleSizeChange"></el-pagination>
                 </div>
             </div>
         </el-dialog>
@@ -95,7 +95,7 @@ import { getCityList } from '@/api/cardManage';
 import { getAdPosition, getCityListByUser } from '@/api/adPublish';
 import publicMethod from '@/utils/publicMethod';
 import buttonVisible from '@/utils/buttonVisible';
-const AD_TYPE = ['', '开屏广告', 'Banner广告', '插屏广告']
+const AD_TYPE = ['', '开屏广告', 'Banner广告', '插屏广告'];
 
 export default {
     name: 'adPositionSelect',
@@ -121,7 +121,7 @@ export default {
         return {
             pageId: '50203',
             visible: this.show,
-            city: '',
+            city: undefined,
             type: '',
             keywords: '',
             cityMenu: [],
@@ -132,7 +132,10 @@ export default {
             multipleSelection: [],
             totalRows: 0,
             totalRows2: 0,
-            pageSize: 5
+            pageSize: 20,
+            getRowKeys(row) {
+                return row.id;
+            }
         };
     },
     created() {
@@ -225,6 +228,10 @@ export default {
             this.currentPage = val;
             this.getAdPositionLists(this.currentPage);
         },
+        handleSizeChange(val) {
+            this.pageSize = val;
+            this.getAdPositionLists(this.currentPage);
+        },
         handleCurrentChange2(val) {
             this.currentPage2 = val;
             this.getAdPositionLists(this.currentPage2);
@@ -269,8 +276,8 @@ export default {
             },
             deep: true
         },
-        city(newValue) {
-            if (newValue) {
+        city(newValue, oldValue) {
+            if (newValue && oldValue) {
                 this.getAdPositionLists();
             }
         },

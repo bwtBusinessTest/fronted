@@ -34,7 +34,7 @@
 			<el-col :span="2" v-if="buttonVisible['20310']"><el-button @click="disableBatchTemplateShow" size="small" type="primary" icon="circle-close">禁用</el-button></el-col>
 		</el-row>
 
-		<el-table :data="tableData" border @selection-change="handleSelectionChange" style="width: 100%" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData">
+		<el-table :data="tableData" border @selection-change="handleSelectionChange" style="width: 100%" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData" height="500">
 			<el-table-column type="selection">
 			</el-table-column>
 			<el-table-column label="模板编号" prop="id">
@@ -55,7 +55,7 @@
 			</el-table-column>
 		</el-table>
 		<div class="page-container">
-			<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalTemplates" @current-change="handleCurrentChange"></el-pagination>
+			<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalTemplates" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 		</div>
 		</div>
 

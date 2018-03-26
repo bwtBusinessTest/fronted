@@ -85,13 +85,13 @@
                 </el-table-column>
                 <el-table-column label="广告位ID" prop="adSenseId" width="110" align="center">
                 </el-table-column>
-                <el-table-column label="城市" prop="cityName" width="160" :show-overflow-tooltip="true">
+                <el-table-column label="城市" prop="cityName" width="100" :show-overflow-tooltip="true" align="center">
                 </el-table-column>
                 <el-table-column label="广告位名称" prop="adSenseName" width="130" align="center">
                 </el-table-column>
                 <el-table-column label="广告类型" prop="adSenseTypeDesc" width="130" align="center">
                 </el-table-column>
-                <el-table-column label="广告位尺寸" prop="adPositionSize" width="170">
+                <el-table-column label="广告位尺寸" prop="adPositionSize" width="110">
                 </el-table-column>
                 <el-table-column label="权重值" prop="weightValue" width="100">
                     <template slot-scope="scope">
@@ -105,7 +105,7 @@
                         <restrictInput v-show="scope.row.orderValEdit" v-model="scope.row.sortNo" :max="10" :min="1" width="79px" v-focus="scope.row.orderValEdit" @handleBlur="handleBlur(scope.row)"></restrictInput>
                     </template>
                 </el-table-column>
-                <el-table-column label="适配度" prop="fitness" width="170">
+                <el-table-column label="适配度" prop="fitness" width="110" align="center">
                 </el-table-column>
                 <el-table-column label="投放／阈值／轮播" prop="put" width="160">
                 </el-table-column>
@@ -122,7 +122,7 @@
         </div>
         <material-select :show.sync="dialogMaterialChooseVisible" @showPic="handleShowPic" @receiveMaterialData="handleReceiveMaterialData"></material-select>
         <preview-pic :show.sync="dialogPreviewPicVisible" :imgUrl="showImgUrl"></preview-pic>
-        <adPositionSelect :show.sync="dialogAdPositionSelectVisible" v-bind="{materialWidth: materialData.width, materialHeight: materialData.height}" @receiveSelect="handleReceiveSelect"></adPositionSelect>
+        <adPositionSelect :show.sync="dialogAdPositionSelectVisible" v-bind="{materialWidth: materialData.width, materialHeight: materialData.height, adType: titleData.adTypeNum}" @receiveSelect="handleReceiveSelect"></adPositionSelect>
     </div>
 </template>
 
@@ -271,6 +271,7 @@ export default {
                         i.edit = false;
                         i.orderValEdit = false;
                         i.put = `${i.totalAdsCount}/${i.deliveryThreshold}/${i.carouselNumber}`;
+                        i.cityName = i.cityName === '本级' ? '全国' : i.cityName;
                         return i;
                     });
                     res.result.forEach(i => {
@@ -440,11 +441,90 @@ export default {
             }
         },
         handleReceiveSelect(arr, gloableUserSelectCity) {
-            if (this.titleData.adBelong === '全国') {
+            if (this.titleData.adBelong === '本级') {
                 if (gloableUserSelectCity) {
                     arr.forEach(i => {
+                        if (this.tableData.some(row => {
+                            return row.id === i.id && row.cityId === i.cityId;
+                        })) {
+                            this.$notify({
+                                title: '提示',
+                                message: '相同广告位相同城市不能重复添加',
+                                type: 'warning',
+                                duration: 1000
+                            });
+                        } else {
+                            i.adSenseId = i.id;
+                            i.put = `${i.cityIds[0].count + i.cityIds[1].count}/${i.threshold}`;
+                            i.edit = false;
+                            i.weightValue = 1;
+                            i.sortNo = 1;
+                            i.orderValEdit = false;
+                            // i.cityId = this.titleData.cityId;
+                            i.cityName = i.city;
+                            i.fitness = i.match;
+                            this.tableData.push(Object.assign({}, i));
+                        }
+                    });
+                } else {
+                    arr.forEach(i => {
+                        i.cityIds.forEach((j, index) => {
+                            if (j.checked) {
+                                i.adSenseId = i.id;
+                                i.cityId = j.cityId;
+                                i.cityName = j.cityName;
+                                if (index !== 0) {
+                                    i.put = `${(j.count + i.cityIds[0].count)}/${i.threshold}`;
+                                } else {
+                                    i.put = `${j.count}/${i.threshold}`;
+                                }
+                                i.edit = false;
+                                i.weightValue = 1;
+                                i.sortNo = 1;
+                                i.orderValEdit = false;
+                                i.fitness = i.match;
+                                if (this.tableData.some(row => {
+                                    return row.adSenseId === i.adSenseId && row.cityId === i.cityId;
+                                })) {
+                                    this.$notify({
+                                        title: '提示',
+                                        message: '相同广告位相同城市不能重复添加',
+                                        type: 'warning',
+                                        duration: 1000
+                                    });
+                                } else {
+                                    // if selected all country that is cityId is 0 delete old cities with same adSenseId
+                                    if (j.cityId === 0) {
+                                        const oldTableLen = this.tableData.length;
+                                        for (let k = 0; k < oldTableLen; k++) {
+                                            const deleteIndex = this.tableData.findIndex(l => {
+                                                return l.adSenseId === i.adSenseId;
+                                            });
+                                            if (deleteIndex > -1) {
+                                                this.tableData.splice(deleteIndex, 1);
+                                            }
+                                        }
+                                    }
+                                    this.tableData.push(Object.assign({}, i));
+                                }
+                            }
+                        });
+                    });
+                }
+            } else {
+                arr.forEach(i => {
+                    if (this.tableData.some(row => {
+                        return row.id === i.id && row.cityId === i.cityId;
+                    })) {
+                        this.$notify({
+                            title: '提示',
+                            message: '相同广告位相同城市不能重复添加',
+                            type: 'warning',
+                            duration: 1000
+                        });
+                    } else {
                         i.adSenseId = i.id;
-                        i.put = `${i.totalAdsCount}/${i.threshold}`;
+                        i.put = `${i.cityIds[0].count + i.cityIds[1].count}/${i.threshold}`;
                         i.edit = false;
                         i.weightValue = 1;
                         i.sortNo = 1;
@@ -453,37 +533,7 @@ export default {
                         i.cityName = i.city;
                         i.fitness = i.match;
                         this.tableData.push(Object.assign({}, i));
-                    });
-                } else {
-                    arr.forEach(i => {
-                        i.cityIds.forEach(j => {
-                            if (j.checked) {
-                                i.adSenseId = i.id;
-                                i.cityId = j.cityId;
-                                i.cityName = j.cityName;
-                                i.put = `${i.totalAdsCount}/${i.threshold}`;
-                                i.edit = false;
-                                i.weightValue = 1;
-                                i.sortNo = 1;
-                                i.orderValEdit = false;
-                                i.fitness = i.match;
-                                this.tableData.push(Object.assign({}, i));
-                            }
-                        });
-                    });
-                }
-            } else {
-                arr.forEach(i => {
-                    i.adSenseId = i.id;
-                    i.put = `${i.totalAdsCount}/${i.threshold}`;
-                    i.edit = false;
-                    i.weightValue = 1;
-                    i.sortNo = 1;
-                    i.orderValEdit = false;
-                    i.cityId = this.titleData.cityId;
-                    i.cityName = i.city;
-                    i.fitness = i.match;
-                    this.tableData.push(Object.assign({}, i));
+                    }
                 });
             }
         },
@@ -492,7 +542,7 @@ export default {
                 for (let i = 0; i < this.multipleSelection.length; i++) {
                     if (this.undeletableTableData.some(j => {
                         return j === this.multipleSelection[i].id;
-                    })) {
+                    }) && this.multipleSelection[i].adStatus !== '6') {
                         this.$notify({
                             title: '提示',
                             message: '已投放的广告位不可删除',

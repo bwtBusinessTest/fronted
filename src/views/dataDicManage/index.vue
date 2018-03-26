@@ -26,7 +26,7 @@
 				<el-col :span="2" v-if="buttonVisible['20607']"><el-button @click="showBatchDictShow" size="small" type="primary" icon="menu">字典显示</el-button></el-col>
 				<el-col :span="2" v-if="buttonVisible['20608']"><el-button @click="hideBatchDictShow" size="small" type="primary" icon="minus">字典隐藏</el-button></el-col>
 			</el-row>
-			<el-table :data="tableData" border @selection-change="handleSelectionChange" height="400" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData">
+			<el-table :data="tableData" border @selection-change="handleSelectionChange" height="500" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData">
 				<el-table-column type="selection">
 			    </el-table-column>
 				<el-table-column label="字典编号" prop="code">
@@ -39,7 +39,7 @@
 				</el-table-column>
 			</el-table>
 			<div class="page-container">
-				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 			</div>
 		</div>
 		<!-- 弹出框 -->

@@ -160,7 +160,7 @@ export default {
 			tableData: [],
 			totalRows: 0 ,
 			currentPage: 1,
-			pageSize: 10,
+			pageSize: 20,
 			multipleSelection: [],
 			dialogCheckVisible: false,
 			dialogInsertVisible: false,

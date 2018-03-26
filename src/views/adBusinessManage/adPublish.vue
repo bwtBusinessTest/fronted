@@ -1,6 +1,6 @@
 <template>
     <div class="advertise-publish">
-        <div class="query-container" ref="queryContainer" style="height:197px;">
+        <div class="query-container" ref="queryContainer" style="height:247px;">
             <el-form :inline="true" :model="form" label-width="100px" ref="adPublishTitle">
                 <el-row>
                     <el-form-item label="广告名称:">
@@ -31,7 +31,7 @@
                 </el-row>
                 <el-row>
                     <el-form-item label="广告归属:">
-                        <el-select size="small" v-model="form.belong" filterable clearable>
+                        <el-select size="small" v-model="form.belong" filterable>
                         <el-option-group
                             v-for="group in cityMenu"
                             :key="group.label"
@@ -51,6 +51,11 @@
                         </el-select>
                     </el-form-item>
                 </el-row>
+                <el-row>
+                    <el-form-item label="物料ID:">
+                        <el-input size="small" v-model="form.materialId" style="width:194px;"></el-input>
+                    </el-form-item>
+                </el-row>
             </el-form>
             <div class="query-btn">
                 <el-button v-if="buttonVisible['5020301']" @click="clear" size="small" type="primary" icon="el-icon-delete"></icon>清空</el-button>
@@ -66,16 +71,17 @@
                 <el-col :span="2" v-if="buttonVisible['5020304'] && showPutawayBtnByStatus"><el-button @click="putawayApplication" size="small" type="primary" icon="el-icon-upload2">上架申请</el-button></el-col>
                 <el-col :span="2" v-if="buttonVisible['5020305'] && showUndercarriageBtnByStatus"><el-button @click="undercarriage" size="small" type="primary" icon="el-icon-download">下架</el-button></el-col>
             </el-row>
-            <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
+            <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="700" @cell-click="handleTableImgClick">
                 <el-table-column type="selection">
                 </el-table-column>
                 <el-table-column label="操作" align="center" width="80">
                     <template slot-scope="scope">
                         <el-popover trigger="hover" placement="top">
-                            <span class="operate" v-if="buttonVisible['5020305'] && (scope.row.status === '1' || scope.row.status === '3' || scope.row.status === '6')" @click="operate(1, scope.row)">修改</span>
+                            <span class="operate" @click="operate(6, scope.row)">详情</span>
+                            <span class="operate" v-if="buttonVisible['5020305'] && (scope.row.status === '1' || scope.row.status === '3' || scope.row.status === '6') && ((cityMenu.length > 1 && scope.row.cityId === 0) || cityMenu.length === 1)" @click="operate(1, scope.row)">修改</span>
                             <span class="operate" v-if="buttonVisible['5020308'] && scope.row.status === '2'" @click="operate(2, scope.row)">审核</span>
                             <span class="operate" v-if="buttonVisible['5020305'] && (scope.row.status == '4' || scope.row.status === '5')" @click="operate(3, scope.row)">下架</span>
-                            <span class="operate" v-if="scope.row.status === '1' || scope.row.status === '3' || scope.row.status === '6'" @click="operate(4, scope.row)">上架申请</span>
+                            <span class="operate" v-if="(scope.row.status === '1' || scope.row.status === '3' || scope.row.status === '6') && ((cityMenu.length > 1 && scope.row.cityId === 0) || cityMenu.length === 1)" @click="operate(4, scope.row)">上架申请</span>
                             <span class="operate" v-if="buttonVisible['5020307'] && scope.row.status === '2'" @click="operate(5, scope.row)">撤回申请</span>
                             <div slot="reference" class="name-wrapper">
                                 <span class="operate">操作</span>
@@ -93,6 +99,16 @@
                     </template>
                 </el-table-column>
                 <el-table-column label="广告类型" prop="adTypeDes" width="130" align="center">
+                </el-table-column>
+                <el-table-column label="广告图片" width="130" align="center">
+                    <template slot-scope="scope">
+                        <el-popover trigger="hover" placement="top">
+                            <p>物料名称: {{ scope.row.materielName }}</p>
+                            <div slot="reference" class="name-wrapper">
+                                <img :src="scope.row.resourceUploadPatch" style="width:100%;height:55px;">
+                            </div>
+                        </el-popover>
+                    </template>
                 </el-table-column>
                 <el-table-column label="广告归属" prop="cityName" width="130" align="center">
                 </el-table-column>
@@ -118,9 +134,10 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
             </div>
         </div>
+        <preview-pic :show.sync="dialogPreviewPicVisible" :imgUrl="showImgUrl"></preview-pic>
     </div>
 </template>
 
@@ -136,6 +153,7 @@ import {
     getCityListByUser
 } from '@/api/adPublish';
 import buttonVisible from '@/utils/buttonVisible';
+import previewPic from '@/components/previewPic';
 import { mapState, mapMutations } from 'vuex';
 const STATUS = ['', '编辑中', '待审核', '审核未通过', '待生效', '生效中', '已下架'];
 
@@ -154,7 +172,8 @@ export default {
                 adOwner: '',
                 dateRangeVal: '',
                 belong: '',
-                adType: ''
+                adType: '',
+                materialId: 222
             },
             queryContainerShrink: false,
             tableData: [],
@@ -165,13 +184,16 @@ export default {
             totalRows: 0,
             currentPage: 1,
             showPutawayBtnByStatus: true,
-            showUndercarriageBtnByStatus: true
+            showUndercarriageBtnByStatus: true,
+            dialogPreviewPicVisible: false,
+            showImgUrl: ''
         };
     },
     created() {
         if (Object.keys(this.queryData).length !== 0) {
             this.form = { ...this.queryData };
         }
+        this.form.materialId = this.$route.query.materialId;
         this.getAdStatusList();
         this.getAdTypeList();
         this.getCityMenu();
@@ -260,7 +282,7 @@ export default {
         },
         shrinkQueryArea() {
             if (this.queryContainerShrink) {
-                this.$refs.queryContainer.style.height = '197px';
+                this.$refs.queryContainer.style.height = '247px';
                 this.queryContainerShrink = false;
             } else {
                 this.$refs.queryContainer.style.height = '60px';
@@ -332,6 +354,8 @@ export default {
                         }
                     });
                 }).catch(() => {});
+            } else if (type === 6) {
+                this.$router.push({ path: '/advertise/businessManage/adDetail', query: { adId: row.adId }});
             }
         },
         handleCurrentChange(val) {
@@ -353,7 +377,7 @@ export default {
                 startDate = '';
                 endDate = '';
             }
-            const params = { pageNo: pageNo, pageSize: this.pageSize, adName: this.form.adName, status: this.form.status, adAdvertiserId: this.form.adOwner, startDate: startDate, endDate: endDate, cityId: this.form.belong, adType: this.form.adType };
+            const params = { pageNo: pageNo, pageSize: this.pageSize, adName: this.form.adName, status: this.form.status, adAdvertiserId: this.form.adOwner, startDate: startDate, endDate: endDate, cityId: this.form.belong, adType: this.form.adType, adMaterielId: this.form.materialId };
             this.loading = true;
             getAdLists({ params }).then(res => {
                 this.tableData = res.result.rows.filter(item => {
@@ -394,6 +418,12 @@ export default {
                 this.advertisers = res.result;
             });
         },
+        handleTableImgClick(row, column, cell, event) {
+            if (column.label === '广告图片') {
+                this.showImgUrl = row.resourceUploadPatch;
+                this.dialogPreviewPicVisible = true;
+            }
+        },
         ...mapMutations({
             recordAdPublishQuery: 'RECORD_AD_PUBLISH_QUERY_DATA'
         })
@@ -420,6 +450,9 @@ export default {
         ...mapState({
             queryData: state => state.app.adPublishQueryData
         })
+    },
+    components: {
+        previewPic
     },
     beforeRouteLeave(to, from, next) {
         this.recordAdPublishQuery(this.form);

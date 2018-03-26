@@ -33,7 +33,7 @@
         <el-col :span="3"><el-button @click="useAble('0')" size="small" type="primary" icon="minus" v-if="buttonVisible['21304']">禁用</el-button></el-col>
         <el-col :span="3"><el-button @click="removeFtp" size="small" type="primary" icon="delete" v-if="buttonVisible['21306']">删除</el-button></el-col>
       </el-row>
-      <el-table fit:true :data="tableData" @selection-change="handleSelectionChange" border ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="380">
+      <el-table fit:true :data="tableData" @selection-change="handleSelectionChange" border ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
         <el-table-column type="selection">
         </el-table-column>
         <el-table-column label="序号" type="index" width="100%">
@@ -54,7 +54,7 @@
         </el-table-column>
       </el-table>
       <div class="page-container">
-        <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[10, 20, 30]" @current-change="currentChange" @size-change="sizeChange"></el-pagination>
+        <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[20, 50, 100]" @current-change="currentChange" @size-change="sizeChange"></el-pagination>
       </div>
     </div>
 

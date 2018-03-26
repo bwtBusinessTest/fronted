@@ -65,7 +65,7 @@
                     </el-table-column>
                     <el-table-column label="适配度" prop="fitness">
                     </el-table-column>
-                    <el-table-column label="投放／闸值／轮播" prop="put">
+                    <el-table-column label="投放／阈值／轮播" prop="put">
                     </el-table-column>
                 </el-table>
                 <div class="page-container">
@@ -164,7 +164,7 @@ export default {
                     this.materialData.id = res.adAdvertisementDetailDto.adMateriel.id;
                     this.materialData.name = res.adAdvertisementDetailDto.adMateriel.materielName;
                     this.materialData.size = res.adAdvertisementDetailDto.adMateriel.resourceWidth + '*' + res.adAdvertisementDetailDto.adMateriel.resourceHeight;
-                    this.materialData.url = `http://60.190.227.164:8100/resource/ad${res.adAdvertisementDetailDto.adMateriel.resourcePath}`;
+                    this.materialData.url = res.adAdvertisementDetailDto.adMateriel.resourcePath;
                     this.startDate = res.adAdvertisementDetailDto.adTime.adBeginDate;
                     this.endDate = res.adAdvertisementDetailDto.adTime.adEndDate;
                     this.titleData.adType = AD_TYPE[Number(res.adAdvertisementDetailDto.adType)];

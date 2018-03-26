@@ -153,6 +153,7 @@ export default {
     },
     methods: {
         clearMeterialChoose() {
+            this.clearData('addForm');
             this.$emit('update:show', false);
         },
         // 获取管理员城市属性
@@ -212,7 +213,6 @@ export default {
                                 duration: 800
                             });
                             this.clearData('addForm');
-                            this.imageUrl = '';
                             this.$emit('sendMethod');
                         }
                     });
@@ -224,6 +224,9 @@ export default {
         },
         clearData(formName) {
             this.$refs[formName].resetFields();
+            this.imageUrl = '';
+            this.addForm.keyWord = '';
+            this.addForm.remark = '';
             this.$emit('update:show', false);
         }
     },

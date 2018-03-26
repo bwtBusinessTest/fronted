@@ -73,6 +73,11 @@
                 </el-table-column>
                 <el-table-column label="归属" prop="cityName">
                 </el-table-column>
+                <el-table-column label="关联广告数量" prop="adCount" align="center">
+                    <template slot-scope="props">
+                        <span style="cursor:pointer" @click="adView(props.row.id)">{{props.row.adCount}}</span>
+                    </template>
+                </el-table-column>
                 <el-table-column label="添加时间" prop="createTime" width="160" sortable>
                 </el-table-column>
                 <el-table-column label="状态" prop="statusDesc">
@@ -81,7 +86,7 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[10, 20, 30]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[20, 50, 100]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
             </div>
         </div>
         <!-- 物料编辑 -->
@@ -271,11 +276,15 @@ export default {
             if (this.tableData.length <= 5) {
                 return 300;
             } else {
-                return '';
+                return 500;
             }
         }
     },
     methods: {
+        // 跳转查看物料关联的广告
+        adView(id) {
+            this.$router.push({ name: '广告发布管理', query: { materialId: id }});
+        },
         // 图片预览消失
         viewImg() {
             this.dialogPreviewPicVisible = false;
@@ -397,8 +406,8 @@ export default {
                     } else {
                         this.$notify.warning({
                             title: '消息',
-                            message: '该物料已有上架中（待生效、生效中）及待审核的广告，不允许修改',
-                            duration: 800
+                            message: '物料已发布广告，不允许修改',
+                            duration: 3000
                         });
                     }
                 });
@@ -406,7 +415,7 @@ export default {
                 this.$notify.warning({
                     title: '消息',
                     message: '只能编辑管理员对应城市的物料',
-                    duration: 800
+                    duration: 3000
                 });
             }
         },
@@ -451,8 +460,8 @@ export default {
                         } else {
                             this.$notify.warning({
                                 title: '消息',
-                                message: '该物料已有上架中（待生效、生效中）及待审核的广告，不允许删除',
-                                duration: 800
+                                message: '部分物料已发布广告，不允许删除',
+                                duration: 3000
                             });
                         }
                     });
@@ -460,7 +469,7 @@ export default {
                     this.$notify.warning({
                         title: '消息',
                         message: '只能删除管理员对应城市的物料',
-                        duration: 800
+                        duration: 3000
                     });
                 }
             } else {
@@ -483,8 +492,8 @@ export default {
                     } else {
                         this.$notify.warning({
                             title: '消息',
-                            message: '该物料已有上架中（待生效、生效中）及待审核的广告，不允许删除',
-                            duration: 800
+                            message: '物料已发布广告，不允许删除',
+                            duration: 2000
                         });
                     }
                 });

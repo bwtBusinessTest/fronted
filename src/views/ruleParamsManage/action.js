@@ -96,8 +96,9 @@
 			    	'dialogDisabledVisible'
 			    ],
 			    loading: true,
-					noTableData: ' ',
-					queryContainerShrink: false
+				noTableData: ' ',
+				queryContainerShrink: false,
+				pageSize: 20
 			}
 		},
 		created() {
@@ -302,7 +303,7 @@
 
 			getRuleParamList(pageNo, isFirst) {
 				const currentPage = pageNo || 1;
-				const params = { pageNo: currentPage, paramName: this.form.paramName || null, variableName: this.form.variableName || null, paramType: this.form.paramType || null, status: this.form.status || null }
+				const params = { pageNo: currentPage, pageSize: this.pageSize, paramName: this.form.paramName || null, variableName: this.form.variableName || null, paramType: this.form.paramType || null, status: this.form.status || null }
 				ruleParamListApi({ params }).then(res => {
 					this.totalRuleParams = res.result.totalCount;
 					this.tableData = res.result.rows.filter((item) => {
@@ -366,6 +367,10 @@
 			handleCurrentChange(val) {
 				this.currentPage = val;
 				this.getRuleParamList(val);
+			},
+			handleSizeChange(val) {
+				this.pageSize = val;
+				this.getRuleParamList(this.currentPage);
 			},
 			clearNewAdd() {
 				for(let key in this.newAddRuleParam) {

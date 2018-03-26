@@ -18,7 +18,7 @@
 				<el-col :span="2" v-if="buttonVisible['20205']"><el-button @click="removeRole" size="small" type="primary" icon="delete">删除</el-button></el-col>
 				<el-col :span="2" v-if="buttonVisible['20206']"><el-button @click="getMenuPermission" size="small" type="primary" icon="minus">权限分配</el-button></el-col>
 			</el-row>
-			<el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData">
+			<el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData" height="500">
 				<el-table-column type="selection">
 				</el-table-column>
 				<el-table-column label="角色编号" prop="roleNo">
@@ -29,7 +29,7 @@
 				</el-table-column>
 			</el-table>
 			<div class="page-container">
-				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 			</div>
 		</div>
 		<el-dialog title="新增角色" @close="clearAddModel" :visible.sync="dialogAddVisible" :close-on-click-modal="false" @open="openNewAddModal">

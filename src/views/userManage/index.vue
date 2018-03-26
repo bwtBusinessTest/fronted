@@ -37,7 +37,7 @@
 				<el-col :span="2" v-if="buttonVisible['20110'] && !isCancel"><el-button @click="roleDistribute" size="small" type="primary" icon="menu">角色分配</el-button></el-col>
 				<el-col :span="2" v-if="buttonVisible['20111'] && !isCancel"><el-button @click="modifyRights" size="small" type="primary" icon="minus">权限修改</el-button></el-col>
 			</el-row>
-			<el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData">
+			<el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading" element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
 				<el-table-column type="selection">
 				</el-table-column>
 				<el-table-column label="用户编号" prop="id">
@@ -50,7 +50,7 @@
 				</el-table-column>
 			</el-table>
 			<div class="page-container">
-				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalUsers" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalUsers" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 			</div>
 		</div>
 		<el-dialog title="新增用户" @close="clearNewAdd" :visible.sync="dialogNewAddVisible" :close-on-click-modal="false" @open="openNewAddModal">
@@ -80,7 +80,7 @@
                                 v-for="item in group.children"
                                 :key="item.id"
                                 :label="item.label"
-                                :value="item.id">
+                                :value="item.code">
                               </el-option>
                         </el-option-group>
                     </el-select>
@@ -95,7 +95,7 @@
 			</div>
 		</el-dialog>
 		<el-dialog title="查看用户" :visible.sync="dialogCheckVisible" :close-on-click-modal="false" @open="openNewAddModal">
-			<el-form :inline="true" :model="checkUserInfoData" style="width:530px;margin:auto;">
+			<el-form :inline="true" :model="checkUserInfoData" style="width:580px;margin:auto;" label-width="78px">
 				<el-form-item label="用户名称">
 					<el-input v-model="checkUserInfoData.userName" disabled></el-input>
 				</el-form-item>
@@ -110,6 +110,9 @@
 				</el-form-item>
 				<el-form-item label="电子邮件">
 					<el-input v-model="checkUserInfoData.email" disabled></el-input>
+				</el-form-item>
+				<el-form-item label="城市">
+					<el-input v-model="checkUserInfoData.cityName" disabled></el-input>
 				</el-form-item>
 				<el-form-item label="其他信息">
 					<el-input v-model="checkUserInfoData.remark" disabled></el-input>

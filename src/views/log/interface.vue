@@ -26,7 +26,7 @@
 			</el-row>
 		</div>
 		<div class="manage-container">
-			<el-table :data="tableData" border height="380" style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData" @cell-dblclick="copyCellContent">
+			<el-table :data="tableData" border height="500" style="width: 100%" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData" @cell-dblclick="copyCellContent">
 				<el-table-column label="序号" prop="sno" width="72">
 				</el-table-column>
 				<el-table-column label="分销商appid" prop="appId" :show-overflow-tooltip="true" width="120">
@@ -47,7 +47,7 @@
 				</el-table-column>
 			</el-table>
 			<div class="page-container">
-				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
+				<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRows" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 			</div>
 		</div>
   	</div>

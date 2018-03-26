@@ -31,7 +31,7 @@
 		</el-row>
 
 
-		<el-table :data="tableData" border @selection-change="handleSelectionChange" style="width: 100%" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData">
+		<el-table :data="tableData" border @selection-change="handleSelectionChange" style="width: 100%" ref="multipleTable" v-loading="loading" element-loading-text="拼命加载中" :empty-text="noTableData" heigh="500">
 			<el-table-column type="selection">
 			</el-table-column>
 			<el-table-column label="序号" prop="id">
@@ -48,7 +48,7 @@
 			</el-table-column>
 		</el-table>
 		<div class="page-container">
-			<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRules" @current-change="handleCurrentChange"></el-pagination>
+			<el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalRules" :page-size="pageSize" :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange" @size-change="handleSizeChange"></el-pagination>
 		</div>
 		</div>
 

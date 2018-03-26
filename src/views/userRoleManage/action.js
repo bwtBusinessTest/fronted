@@ -23,7 +23,7 @@ export default {
           } else {
             if (/[A-Za-z0-9]+_[A-Za-z0-9]+_[A-Za-z0-9]+/g.test(value)) {
               validateRoleNoApi({ params: value}).then(res => {
-                if (res.result.isExist) {
+                if (res.result.isExist && value !== this.oldRoleNo) {
                   callback('角色编号已存在');
                 } else {
                   callback()
@@ -41,7 +41,7 @@ export default {
     var validateRoleName = (rule, value, callback) => {
       if (value) {
         validateRoleNameApi({ params: value }).then(res => {
-          if (res.result.isExist) {
+          if (res.result.isExist && value !== this.oldRoleName) {
             callback('角色名称已存在');
           } else {
             callback();
@@ -84,7 +84,7 @@ export default {
       //分页model：总数、当前页面
       total: 0,
       currentPage: 1,
-      pageSize: 10,
+      pageSize: 20,
       //当前选择的数据集
       multipleSelection: [],
       //角色名称是否存在flag
@@ -113,7 +113,9 @@ export default {
         'dialogRightDistributeVisible'
       ],
       loading: true,
-      noTableData: ' '
+      noTableData: ' ',
+      oldRoleName: '',
+      oldRoleNo: ''
     }
   },
   //初始化查询角色列表
@@ -183,6 +185,8 @@ export default {
         this.showSelectMoreDataMsg();
       } else {
         this.modifyRoleData = { ...this.multipleSelection[0] };
+        this.oldRoleName = this.modifyRoleData.roleName;
+        this.oldRoleNo = this.modifyRoleData.roleNo;
         this.dialogModifyVisible = true;
       }
     },

@@ -112,7 +112,8 @@
 			    	'dialogDisabledVisible'
 			    ],
 			    loading: true,
-			    noTableData: ' '
+			    noTableData: ' ',
+			    pageSize: 20
 			}
 		},
 
@@ -556,7 +557,10 @@
 				this.currentPage = val;
 				this.getTmplateList(val);
 			},
-			
+			handleSizeChange(val) {
+				this.pageSize = val;
+				this.getTmplateList(this.currentPage);
+			},
 			getUEContent(ref) {
 	        	let content = this.$refs[ref].getUEContent();
 	     		return content;

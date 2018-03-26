@@ -33,8 +33,10 @@
       </el-row>
       <el-table :data="tableData" border @selection-change="handleSelectionChange" ref="multipleTable"
                 v-loading="loading" element-loading-text="拼命加载中" element-loading-spinner="el-icon-loading"
-                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData">
+                element-loading-background="rgba(0, 0, 0, 0.8)" :empty-text="noTableData" height="500">
         <el-table-column type="selection">
+        </el-table-column>
+        <el-table-column label="作业ID" align="center" prop="jobId" width="120">
         </el-table-column>
         <el-table-column label="作业名称" align="center" prop="jobName" width="150">
         </el-table-column>
@@ -45,6 +47,8 @@
         <el-table-column label="触发器表达式" align="center" prop="cronExpr" width="150">
         </el-table-column>
         <el-table-column label="触发器状态" align="center" prop="triggerStatus" width="100">
+        </el-table-column>
+        <el-table-column label="作业参数" align="center" prop="jobDataStr" width="300">
         </el-table-column>
         <el-table-column label="上次触发时间" align="center" prop="prevFireTimeStr" width="170">
         </el-table-column>
@@ -60,7 +64,7 @@
       </el-table>
       <div class="page-container">
         <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="totalJob" :page-size="pageSize"
-                       :page-sizes="[10, 20, 30]" @current-change="handleCurrentChange"
+                       :page-sizes="[20, 50, 100]" @current-change="handleCurrentChange"
                        @size-change="handleSizeChange"></el-pagination>
       </div>
     </div>
@@ -128,7 +132,7 @@
               loading: false,
               noTableData: '',
               totalJob: 0,
-              pageSize: 10,
+              pageSize: 20,
               currentPage: 1,
               multipleSelection: [],
               dialogStopSchedulerVisible: false,
@@ -217,11 +221,11 @@
           },
           handleCurrentChange(val) {
               this.currentPage = val;
-              this.getJobList(this.currentPage);
+              this.getJobTriggerList(this.currentPage);
           },
           handleSizeChange(val) {
               this.pageSize = val;
-              this.getJobList(this.currentPage);
+              this.getJobTriggerList(this.currentPage);
           },
           startScheduler() {
               startScheduler().then(res => {

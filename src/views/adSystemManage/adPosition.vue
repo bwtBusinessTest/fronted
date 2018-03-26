@@ -87,7 +87,7 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[10, 20, 30]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="form.pageSize" :page-sizes="[20, 50, 100]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
             </div>
         </div>
 
@@ -337,13 +337,13 @@
                     </el-input>
                 </el-form-item>
                 <el-form-item label="尺寸大小:" prop="adSenseWide">
-                    <el-input size="small" :disabled="editForm.adSenseType!='3'" v-model="editForm.adSenseWide" style="width:180px">
+                    <el-input size="small" v-model="editForm.adSenseWide" style="width:180px">
                         <template slot="prepend">宽</template>
                         <template slot="append">px</template>                        
                     </el-input>
                 </el-form-item> 
                 <el-form-item prop="adSenseHigh">  
-                    <el-input size="small" :disabled="editForm.adSenseType!='3'" v-model="editForm.adSenseHigh"  style="width:180px">
+                    <el-input size="small" v-model="editForm.adSenseHigh"  style="width:180px">
                         <template slot="prepend">高</template>
                         <template slot="append">px</template>                        
                     </el-input>
@@ -461,12 +461,21 @@ export default {
             }
         };
         var validateAdPosition = (rule, value, callback) => {
-            const params = { adSenseCode: this.addForm.adSenseCode };
+            var params;
+            if (this.addForm.adSenseCode === '') {
+                params = { adSenseCode: this.editForm.adSenseCode, id: this.editForm.id };
+            } else {
+                params = { adSenseCode: this.addForm.adSenseCode, id: '' };
+            }
             adPositionIsExit({ params }).then(res => {
-                if (res.result.errcode === '0004') {
-                    callback(new Error('广告位code已存在'));
+                if (res.errcode === '0000') {
+                    if (res.result.errcode === '0004') {
+                        callback(new Error('广告位code已存在'));
+                    } else {
+                        callback();
+                    }
                 } else {
-                    callback();
+                    callback(new Error('校验失败'));
                 }
             });
         };
@@ -495,15 +504,15 @@ export default {
             dialogEditVisible: false,
             // 添加表单数据
             addForm: {
-                updateInterval: '3600',
+                updateInterval: '1',
                 appApplicationType: '',
                 adSenseName: '',
                 adSenseCode: '',
                 adSenseType: '1',
                 materielType: '1',
                 autoCloseSecond: '3',
-                carouselNumber: '5',
-                carouselInterval: '3',
+                carouselNumber: '1',
+                carouselInterval: '1',
                 autoUserCloseType: '1',
                 adSenseWide: '',
                 adSenseHigh: '',
@@ -584,7 +593,9 @@ export default {
             checkEditAll: false,
             checkedCities: [],
             ifShowOff: false,
-            ifShowOn: false
+            ifShowOn: false,
+            adPositionHeight: '',
+            adPositionWidth: ''
         };
     },
     created() {
@@ -599,7 +610,7 @@ export default {
             if (this.tableData.length <= 5) {
                 return 300;
             } else {
-                return '';
+                return 500;
             }
         },
         adSenseType() {
@@ -660,6 +671,8 @@ export default {
         },
         openEditModal(row) {
             var ids = [];
+            this.adPositionHeight = row.adSenseHigh;
+            this.adPositionWidth = row.adSenseWide;
             for (var j = 0; j < row.cityIds.length; j++) {
                 ids.push(row.cityIds[j].cityId.toString());
             }
@@ -668,11 +681,10 @@ export default {
                 this.editForm[key] = row[key];
             }
             this.editForm.cityIds = ids;
-            const baseUrl = process.env.BASE_API.substring(0, 17);
             if (row.adResourceId === null) {
                 this.imageUrl = '';
             } else {
-                this.imageUrl = baseUrl + row.resourcePath;
+                this.imageUrl = row.resourcePath;
             }
         },
         changeCity() {
@@ -725,42 +737,61 @@ export default {
                 }
             });
         },
+        // 修改方法
+        editAdPosition() {
+            this.editForm.autoCloseSecond = parseInt(this.editForm.autoCloseSecond);
+            this.editForm.carouselNumber = parseInt(this.editForm.carouselNumber);
+            this.editForm.carouselInterval = parseInt(this.editForm.carouselInterval);
+            this.editForm.adSenseWide = parseInt(this.editForm.adSenseWide);
+            this.editForm.adSenseHigh = parseInt(this.editForm.adSenseHigh);
+            this.editForm.deliveryThreshold = parseInt(this.editForm.deliveryThreshold);
+            this.editForm.updateInterval = parseInt(this.editForm.updateInterval);
+            var ids = [];
+            this.editForm.cityIds.forEach((ele, index) => {
+                ids[index] = ele;
+            });
+            ids.splice(0, 1);
+            var params = {};
+            for (var key in this.editForm) {
+                if (key === 'cityIds') {
+                    params.cityIds = ids;
+                } else {
+                    params[key] = this.editForm[key];
+                }
+            }
+            editAdPosition({ params }).then(res => {
+                if (res.errcode === '0000') {
+                    this.$notify.success({
+                        title: '消息',
+                        message: '修改成功',
+                        duration: 2000
+                    });
+                    this.dialogEditVisible = false;
+                    // this.form.pageNo = 1;
+                    this.getAdPositionList();
+                }
+            });
+        },
         // 编辑card
         submitEditForm(formName) {
             this.$refs[formName].validate((valid) => {
                 if (valid) {
-                    this.editForm.autoCloseSecond = parseInt(this.editForm.autoCloseSecond);
-                    this.editForm.carouselNumber = parseInt(this.editForm.carouselNumber);
-                    this.editForm.carouselInterval = parseInt(this.editForm.carouselInterval);
-                    this.editForm.adSenseWide = parseInt(this.editForm.adSenseWide);
-                    this.editForm.adSenseHigh = parseInt(this.editForm.adSenseHigh);
-                    this.editForm.deliveryThreshold = parseInt(this.editForm.deliveryThreshold);
-                    this.editForm.updateInterval = parseInt(this.editForm.updateInterval);
-                    var ids = [];
-                    this.editForm.cityIds.forEach((ele, index) => {
-                        ids[index] = ele;
-                    });
-                    ids.splice(0, 1);
-                    var params = {};
-                    for (var key in this.editForm) {
-                        if (key === 'cityIds') {
-                            params.cityIds = ids;
-                        } else {
-                            params[key] = this.editForm[key];
-                        }
+                    if ((this.editForm.adSenseWide === this.adPositionWidth) && (this.editForm.adSenseHigh === this.adPositionHeight)) {
+                        this.editAdPosition();
+                    } else {
+                        this.$confirm('广告位尺寸修改可能导致前端广告不能正常显示，您确认修改吗?', '提示', {
+                            confirmButtonText: '确定',
+                            cancelButtonText: '取消',
+                            type: 'warning',
+                            center: true
+                        }).then(() => {
+                            this.editAdPosition();
+                        }).catch(() => {});
+                        var self = this;
+                        setTimeout(function() {
+                            self.openComfirmCallback();
+                        }, 100);
                     }
-                    editAdPosition({ params }).then(res => {
-                        if (res.errcode === '0000') {
-                            this.$notify.success({
-                                title: '消息',
-                                message: '修改成功',
-                                duration: 800
-                            });
-                            this.dialogEditVisible = false;
-                            // this.form.pageNo = 1;
-                            this.getAdPositionList();
-                        }
-                    });
                 } else {
                     console.log('error submit!!');
                     return false;
@@ -928,6 +959,25 @@ export default {
     watch: {
         adSenseType(newValue, oldValue) {
             this.addForm.autoCloseSecond = (newValue === '1' ? '3' : '0');
+            switch (newValue) {
+                case '1':
+                    this.addForm.carouselNumber = '1';
+                    this.addForm.carouselInterval = '1';
+                    this.addForm.updateInterval = '1';
+                    break;
+                case '2':
+                    this.addForm.carouselNumber = '5';
+                    this.addForm.carouselInterval = '3';
+                    this.addForm.updateInterval = '3600';
+                    this.addForm.autoCloseSecond = '0';
+                    break;
+                case '3':
+                    this.addForm.updateInterval = '3600';
+                    this.addForm.carouselNumber = '1';
+                    this.addForm.carouselInterval = '1';
+                    this.addForm.autoCloseSecond = '0';
+                    break;
+            }
         }
     }
 };

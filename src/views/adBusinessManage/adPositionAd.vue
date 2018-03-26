@@ -83,7 +83,7 @@
                 </el-table-column>
             </el-table>
             <div class="page-container">
-                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="20" :page-sizes="[10, 20, 30]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
+                <el-pagination layout="total, sizes, prev, pager, next, jumper" :total="total" :page-size="20" :page-sizes="[20, 50, 100]" @current-change="currenChange" @size-change="sizeChange"></el-pagination>
             </div>
         </div>
     </div>    
@@ -125,7 +125,7 @@ export default {
             if (this.tableData.length <= 5) {
                 return 300;
             } else {
-                return (this.tableData.length + 1) * 40 + 18;
+                return 500;
             }
         }
     },

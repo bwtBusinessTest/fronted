@@ -220,6 +220,13 @@ export const asyncRouterMap = [{
             icon: 'zonghe',
             hidden: true,
             component: _import('adBusinessManage/adThrowSet')
+        },
+        {
+            path: 'adDetail',
+            name: '广告详情',
+            icon: 'zonghe',
+            hidden: true,
+            component: _import('adBusinessManage/adDetail')
         }
         ]
     }
